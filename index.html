@@ -822,51 +822,48 @@
       });
     }, { rootMargin: '-40% 0px -55% 0px' });
     sections.forEach(s => io.observe(s));
+    // ──── Stock Ticker (Finnhub) ────
+    (function(){
+      var API_KEY = 'd7ps5dhr01qosaapp9m0d7ps5dhr01qosaapp9mg';
+      var syms = ['AAPL','MSFT','GOOGL','AMZN','NVDA','META','TSLA','JPM','V','SPY'];
+      var cache = {};
+
+      function renderTicker(){
+        var el = document.getElementById('stockTicker');
+        if(!el) return;
+        var items = syms.map(function(s){
+          var d = cache[s];
+          if(!d) return '<span class="ticker-item"><span class="sym">'+s+'</span> …</span>';
+          var change = (d.c - d.pc).toFixed(2);
+          var pct = ((change / d.pc) * 100).toFixed(2);
+          var cls = change >= 0 ? 'up' : 'down';
+          var arr = change >= 0 ? '▲' : '▼';
+          return '<span class="ticker-item"><span class="sym">'+s+'</span> $'+d.c.toFixed(2)+' <span class="'+cls+'">'+arr+' '+Math.abs(change).toFixed(2)+' ('+Math.abs(pct)+'%)</span></span>';
+        }).join('');
+        el.innerHTML = items + items;
+      }
+
+      function fetchAll(){
+        syms.forEach(function(s){
+          fetch('https://finnhub.io/api/v1/quote?symbol='+s+'&token='+API_KEY)
+            .then(function(r){ return r.json(); })
+            .then(function(d){ if(d && d.c){ cache[s] = d; renderTicker(); } })
+            .catch(function(){});
+        });
+      }
+
+      var fallback = {AAPL:{c:192.53,pc:190.21},MSFT:{c:416.38,pc:413.74},GOOGL:{c:176.89,pc:175.42},AMZN:{c:186.21,pc:184.83},NVDA:{c:131.42,pc:128.96},META:{c:506.11,pc:503.28},TSLA:{c:176.75,pc:174.12},JPM:{c:239.44,pc:237.81},V:{c:283.17,pc:281.55},SPY:{c:526.83,pc:524.19}};
+      syms.forEach(function(s){ cache[s] = fallback[s]; });
+      renderTicker();
+
+      if(API_KEY !== 'd7ps5dhr01qosaapp9m0d7ps5dhr01qosaapp9mg'){
+        fetchAll();
+        setInterval(fetchAll, 30000);
+      }
+    })();
   </script>
 
-
   <script>
-  /* ──── Stock Ticker (Finnhub) ──── */
-  (function(){
-    var API_KEY = 'd7prruhr01qosaapodr0d7prruhr01qosaapodrg';
-    var syms = ['AAPL','MSFT','GOOGL','AMZN','NVDA','META','TSLA','JPM','V','SPY'];
-    var cache = {};
-
-    function render(){
-      var el = document.getElementById('stockTicker');
-      if(!el) return;
-      var items = syms.map(function(s){
-        var d = cache[s];
-        if(!d) return '<span class="ticker-item"><span class="sym">'+s+'</span> …</span>';
-        var change = (d.c - d.pc).toFixed(2);
-        var pct = ((change / d.pc) * 100).toFixed(2);
-        var cls = change >= 0 ? 'up' : 'down';
-        var arr = change >= 0 ? '▲' : '▼';
-        return '<span class="ticker-item"><span class="sym">'+s+'</span> $'+d.c.toFixed(2)+' <span class="'+cls+'">'+arr+' '+Math.abs(change).toFixed(2)+' ('+Math.abs(pct)+'%)</span></span>';
-      }).join('');
-      el.innerHTML = items + items;
-    }
-
-    function fetchAll(){
-      syms.forEach(function(s){
-        fetch('https://finnhub.io/api/v1/quote?symbol='+s+'&token='+API_KEY)
-          .then(function(r){ return r.json(); })
-          .then(function(d){ if(d && d.c){ cache[s] = d; render(); } })
-          .catch(function(){});
-      });
-    }
-
-    /* Fallback: show simulated data until API responds */
-    var fallback = {AAPL:{c:192.53,pc:190.21},MSFT:{c:416.38,pc:413.74},GOOGL:{c:176.89,pc:175.42},AMZN:{c:186.21,pc:184.83},NVDA:{c:131.42,pc:128.96},META:{c:506.11,pc:503.28},TSLA:{c:176.75,pc:174.12},JPM:{c:239.44,pc:237.81},V:{c:283.17,pc:281.55},SPY:{c:526.83,pc:524.19}};
-    syms.forEach(function(s){ cache[s] = fallback[s]; });
-    render();
-
-    if(API_KEY !== 'd7prruhr01qosaapodr0d7prruhr01qosaapodrg'){
-      fetchAll();
-      setInterval(fetchAll, 30000);
-    }
-  })();
-
   /* ──── Language Toggle ──── */
   var currentLang = 'en';
   var trEN = {
