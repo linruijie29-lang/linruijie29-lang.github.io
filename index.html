@@ -2,93 +2,111 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Terminal</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Richard Lin — BTE @ NYU Stern</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond&family=DM+Sans&display=swap" rel="stylesheet">
 
 <style>
 body {
   margin: 0;
-  background: #000;
-  color: #00ffcc;
-  font-family: "Courier New", monospace;
+  background: #f5f0e8;
+  font-family: 'DM Sans', sans-serif;
+  color: #1a1714;
 }
 
-header {
+/* NAV */
+nav {
+  position: fixed;
+  top: 28px;
+  width: 100%;
+  padding: 15px 40px;
+  background: rgba(245,240,232,0.9);
   display: flex;
   justify-content: space-between;
-  padding: 10px;
-  background: #111;
-  border-bottom: 1px solid #00ffcc;
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+
+/* TICKER */
+.ticker-wrap {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  background: #222;
+  color: white;
+  overflow: hidden;
+  padding: 6px 0;
+}
+
+.ticker {
+  display: flex;
+  gap: 40px;
+  animation: scroll 25s linear infinite;
+}
+
+@keyframes scroll {
+  0% {transform: translateX(0);}
+  100% {transform: translateX(-50%);}
+}
+
+/* SECTIONS */
+section {
+  padding: 100px 40px;
+}
+
+#hero {
+  margin-top: 100px;
+}
+
+/* PORTFOLIO */
+input, button {
+  padding: 8px;
+  margin: 5px;
 }
 
 button {
-  background: black;
-  color: #00ffcc;
-  border: 1px solid #00ffcc;
-  padding: 5px 10px;
   cursor: pointer;
 }
 
-.container {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  height: calc(100vh - 50px);
-}
+.green { color: #4caf84; }
+.red { color: #e05555; }
 
-.panel {
-  padding: 10px;
-  border-right: 1px solid #00ffcc;
-  overflow-y: auto;
-}
-
-h2 {
-  margin-top: 0;
-  color: #00ffff;
-}
-
-input {
-  background: black;
-  color: #00ffcc;
-  border: 1px solid #00ffcc;
-  padding: 5px;
-  margin-right: 5px;
-}
-
-.green { color: #00ff00; }
-.red { color: #ff3333; }
 </style>
 </head>
 
 <body>
 
-<header>
-  <span data-key="title">TERMINAL</span>
-  <button onclick="toggleLang()">中文 / EN</button>
-</header>
-
-<div class="container">
-
-<!-- MARKET -->
-<div class="panel">
-  <h2 data-key="market">MARKET</h2>
-  <div id="market"></div>
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker" id="stockTicker">Loading market...</div>
 </div>
+
+<!-- NAV -->
+<nav>
+  <div>Richard Lin</div>
+  <button onclick="toggleLang()">中文 / EN</button>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <h1 data-key="title">Richard Lin</h1>
+  <p data-key="bio">
+    NYU Stern — Business, Technology & Entrepreneurship
+  </p>
+</section>
 
 <!-- PORTFOLIO -->
-<div class="panel">
-  <h2 data-key="portfolio">PORTFOLIO</h2>
+<section>
+  <h2>Portfolio</h2>
 
-  <div>
-    <input id="symbol" placeholder="Symbol">
-    <input id="shares" type="number" placeholder="Shares">
-    <input id="price" type="number" placeholder="Buy Price">
-    <button onclick="addStock()">ADD</button>
-  </div>
+  <input id="symbol" placeholder="Symbol">
+  <input id="shares" type="number" placeholder="Shares">
+  <input id="buyPrice" type="number" placeholder="Buy Price">
+  <button onclick="addStock()">Add</button>
 
-  <div id="portfolio"></div>
-  <h3 id="total"></h3>
-</div>
-
-</div>
+  <div id="portfolioList"></div>
+  <h3 id="portfolioTotal"></h3>
+</section>
 
 <script>
 const API_KEY = "YOUR_API_KEY_HERE";
@@ -96,29 +114,26 @@ const API_KEY = "YOUR_API_KEY_HERE";
 // ===== LANGUAGE =====
 let lang = "en";
 
-const t = {
+const translations = {
   en: {
-    title: "TERMINAL",
-    market: "MARKET",
-    portfolio: "PORTFOLIO"
+    title: "Richard Lin",
+    bio: "NYU Stern — Business, Technology & Entrepreneurship"
   },
   zh: {
-    title: "终端",
-    market: "市场",
-    portfolio: "投资组合"
+    title: "林睿杰",
+    bio: "纽约大学斯特恩商学院 — 商业、技术与创业"
   }
 };
 
 function toggleLang() {
   lang = lang === "en" ? "zh" : "en";
   document.querySelectorAll("[data-key]").forEach(el => {
-    el.textContent = t[lang][el.dataset.key];
+    el.textContent = translations[lang][el.dataset.key];
   });
 }
 
-// ===== MARKET (WEBSOCKET) =====
+// ===== WEBSOCKET =====
 const socket = new WebSocket(`wss://ws.finnhub.io?token=${API_KEY}`);
-
 const symbols = ["AAPL","TSLA","MSFT","NVDA"];
 let prices = {};
 
@@ -130,23 +145,26 @@ socket.addEventListener("open", () => {
 
 socket.addEventListener("message", msg => {
   const data = JSON.parse(msg.data);
+
   if (data.data) {
     data.data.forEach(trade => {
       prices[trade.s] = trade.p;
     });
-    renderMarket();
+
+    renderTicker();
     renderPortfolio();
   }
 });
 
-function renderMarket() {
-  const div = document.getElementById("market");
-  div.innerHTML = "";
+function renderTicker() {
+  let html = "";
 
-  for (let s of symbols) {
+  symbols.forEach(s => {
     const price = prices[s] || 0;
-    div.innerHTML += `<div>${s}: $${price.toFixed(2)}</div>`;
-  }
+    html += `<span>${s}: $${price.toFixed(2)}</span>`;
+  });
+
+  document.getElementById("stockTicker").innerHTML = html + html;
 }
 
 // ===== PORTFOLIO =====
@@ -155,27 +173,28 @@ let portfolio = JSON.parse(localStorage.getItem("portfolio") || "[]");
 function addStock() {
   const symbol = document.getElementById("symbol").value.toUpperCase();
   const shares = parseFloat(document.getElementById("shares").value);
-  const price = parseFloat(document.getElementById("price").value);
+  const buyPrice = parseFloat(document.getElementById("buyPrice").value);
 
-  if (!symbol || !shares || !price) return;
+  if (!symbol || !shares || !buyPrice) return;
 
-  portfolio.push({symbol, shares, price});
+  portfolio.push({symbol, shares, buyPrice});
   localStorage.setItem("portfolio", JSON.stringify(portfolio));
 
   renderPortfolio();
 }
 
 function renderPortfolio() {
-  const div = document.getElementById("portfolio");
-  div.innerHTML = "";
+  const list = document.getElementById("portfolioList");
+  list.innerHTML = "";
 
   let totalValue = 0;
   let totalCost = 0;
 
-  portfolio.forEach((p, i) => {
-    const current = prices[p.symbol] || p.price;
+  portfolio.forEach(p => {
+    const current = prices[p.symbol] || p.buyPrice;
+
     const value = current * p.shares;
-    const cost = p.price * p.shares;
+    const cost = p.buyPrice * p.shares;
     const pnl = value - cost;
 
     totalValue += value;
@@ -183,9 +202,9 @@ function renderPortfolio() {
 
     const color = pnl >= 0 ? "green" : "red";
 
-    div.innerHTML += `
+    list.innerHTML += `
       <div>
-        ${p.symbol} | ${p.shares} shares | 
+        ${p.symbol} | ${p.shares} shares |
         $${current.toFixed(2)} |
         <span class="${color}">
           P&L: $${pnl.toFixed(2)}
@@ -195,11 +214,10 @@ function renderPortfolio() {
   });
 
   const totalPnL = totalValue - totalCost;
-  const totalColor = totalPnL >= 0 ? "green" : "red";
 
-  document.getElementById("total").innerHTML = `
+  document.getElementById("portfolioTotal").innerHTML = `
     Total: $${totalValue.toFixed(2)} |
-    <span class="${totalColor}">
+    <span class="${totalPnL >= 0 ? "green" : "red"}">
       P&L: $${totalPnL.toFixed(2)}
     </span>
   `;
