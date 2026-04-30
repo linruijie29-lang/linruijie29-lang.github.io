@@ -88,6 +88,23 @@
     }
 
     .nav-links a:hover { color: var(--gold); }
+    .lang-toggle {
+      background: none;
+      border: 1px solid var(--gold);
+      color: var(--gold);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      padding: 5px 12px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-left: 20px;
+    }
+    .lang-toggle:hover {
+      background: var(--gold);
+      color: var(--cream);
+    }
 
     /* ── Hero ── */
     #hero {
@@ -524,6 +541,7 @@
       <li><a href="#skills">Skills</a></li>
       <li><a href="#contact">Contact</a></li>
     </ul>
+    <button class="lang-toggle" id="langToggle" onclick="toggleLang()">中文</button>
   </nav>
 
   <!-- ── Hero ── -->
@@ -577,20 +595,16 @@
       </div>
       <div class="about-stats">
         <div class="stat-box">
-          <div class="stat-num">3</div>
-          <div class="stat-label">Projects Completed</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-num">2</div>
-          <div class="stat-label">Competitions Entered</div>
+          <div class="stat-num" data-target="3">0</div>
+          <div class="stat-label">Works</div>
         </div>
         <div class="stat-box">
           <div class="stat-num">BTE</div>
           <div class="stat-label">NYU Stern Program</div>
         </div>
         <div class="stat-box">
-          <div class="stat-num">2</div>
-          <div class="stat-label">Languages Spoken</div>
+          <div class="stat-num" data-target="2">0</div>
+          <div class="stat-label">Languages</div>
         </div>
       </div>
     </div>
@@ -598,8 +612,8 @@
 
   <!-- ── Projects ── -->
   <section id="projects">
-    <div class="section-label">Selected Work</div>
-    <h2>Projects &amp; <em>Competitions</em></h2>
+    <div class="section-label">Featured</div>
+    <h2>My <em>Works</em></h2>
 
     <div class="projects-grid">
 
@@ -667,7 +681,11 @@
     <div class="section-label">Capabilities</div>
     <h2>Skills &amp; <em>Tools</em></h2>
     <div class="skills-wrap">
-      <span class="skill-chip">Chinese (Professional)</span>
+      <span class="skill-chip">Chinese (Native)</span>
+      <div class="skills-divider"></div>
+      <span class="skill-chip">BTE</span>
+      <span class="skill-chip">Finance</span>
+      <span class="skill-chip">Computer Science</span>
       <div class="skills-divider"></div>
       <span class="skill-chip">SQL</span>
       <span class="skill-chip">HTML</span>
@@ -713,6 +731,32 @@
       });
     }, { threshold: 0.12 });
 
+    // Count-up animation
+    function animateCount(el, target, duration) {
+      var start = 0;
+      var startTime = null;
+      function step(timestamp) {
+        if (!startTime) startTime = timestamp;
+        var progress = Math.min((timestamp - startTime) / duration, 1);
+        el.textContent = Math.floor(progress * target);
+        if (progress < 1) { window.requestAnimationFrame(step); }
+        else { el.textContent = target; }
+      }
+      window.requestAnimationFrame(step);
+    }
+
+    var statEls = document.querySelectorAll('.stat-num[data-target]');
+    var animated = [];
+    var statObserver = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting && animated.indexOf(entry.target) === -1) {
+          animated.push(entry.target);
+          animateCount(entry.target, parseInt(entry.target.getAttribute('data-target')), 1200);
+        }
+      });
+    }, { threshold: 0.0, rootMargin: '0px 0px 0px 0px' });
+    statEls.forEach(function(el) { statObserver.observe(el); });
+
     document.querySelectorAll('.project-card, .stat-box, .skill-chip').forEach((el, i) => {
       el.style.opacity = '0';
       el.style.transform = 'translateY(20px)';
@@ -733,6 +777,192 @@
       });
     }, { rootMargin: '-40% 0px -55% 0px' });
     sections.forEach(s => io.observe(s));
+  </script>
+
+  <script>
+  /* ——— Language Toggle ——— */
+  const translations = {
+    en: {
+      navHome: 'Richard Lin',
+      navAbout: 'About',
+      navWork: 'Work',
+      navSkills: 'Skills',
+      navContact: 'Contact',
+      eyebrow: 'NYU Stern · BTE · Class of 2029',
+      heroH1a: 'Finance & Tech,',
+      heroH1b: 'Synthesized',
+      heroBio: 'Richard is a freshman at NYU Stern studying Business, Technology & Entrepreneurship — at the intersection of capital markets and emerging technology.',
+      heroCta: 'View My Work',
+      aboutLabel: 'About',
+      aboutH2a: 'Building at the',
+      aboutH2b: 'intersection',
+      aboutBody: 'I'm currently enrolled in the BTE program — one of the most selective tracks at Stern, focused on entrepreneurship and emerging technologies. My long-term goal is to work in the technology division of a financial institution, applying rigorous financial analysis to complex technology investments.',
+      statWorksLabel: 'Works',
+      statProgramLabel: 'NYU Stern Program',
+      statLangsLabel: 'Languages',
+      workLabel: 'Featured',
+      workH2a: 'My',
+      workH2b: 'Works',
+      proj1Tag: 'BTE Microsoft Hackathon — Finalist',
+      proj1Title: 'Friction',
+      proj1Desc: 'BTE × Microsoft Hackathon Innovation Challenge finalist. A Chrome extension connected to a physical Arduino that detects and discourages impulsive online purchases — built and pitched within a single hackathon.',
+      proj1Link: 'View Slides',
+      proj2Tag: 'BTE Design Sprint — Finalist',
+      proj2Title: 'Fulton',
+      proj2Desc: 'BTE Startup Design Sprint. Applied design thinking to develop partnership opportunities and expansion strategies — moving from problem framing to structured pitch through rapid iteration.',
+      proj2Link: 'View Slides',
+      proj3Tag: 'NYU SVS VC Competition',
+      proj3Title: 'Hamming',
+      proj3Desc: 'NYU SVS Venture Capital Case Competition. A structured investment analysis and fund thesis — applying venture frameworks to evaluate a high-potential early-stage company.',
+      proj3Link: 'View on LinkedIn',
+      skillsLabel: 'Capabilities',
+      skillsH2a: 'Skills &',
+      skillsH2b: 'Tools',
+      contactLabel: 'Get in Touch',
+      contactH2a: 'Let's',
+      contactH2b: 'Connect',
+      contactBody: 'Whether you're looking to collaborate, discuss opportunities, or just say hello — I'd love to hear from you.',
+      contactEmail: 'Send an Email',
+      contactLI: 'LinkedIn',
+      footerText: '© 2025 Richard Lin · NYU Stern BTE',
+      langBtn: '中文',
+    },
+    zh: {
+      navHome: '林睿杰',
+      navAbout: '关于',
+      navWork: '作品',
+      navSkills: '技能',
+      navContact: '联系',
+      eyebrow: 'NYU Stern · BTE · 2029届',
+      heroH1a: '金融与科技，',
+      heroH1b: '融合贯通',
+      heroBio: '林睿杰是纽约大学斯特恩商学院的大一学生，就读于商业、技术与创业（BTE）项目——专注于资本市场与新兴科技的交汇点。',
+      heroCta: '查看我的作品',
+      aboutLabel: '关于我',
+      aboutH2a: '站在金融与科技的',
+      aboutH2b: '交汇处',
+      aboutBody: '我目前就读于BTE项目——斯特恩商学院最具竞争力的专业之一，专注于创业精神与新兴技术。我的长期目标是在金融机构的科技部门工作，将严格的金融分析应用于复杂的科技投资领域。',
+      statWorksLabel: '作品',
+      statProgramLabel: 'NYU Stern 项目',
+      statLangsLabel: '语言',
+      workLabel: '精选作品',
+      workH2a: '我的',
+      workH2b: '作品集',
+      proj1Tag: 'BTE微软黑客马拉松 — 决赛入围',
+      proj1Title: 'Friction',
+      proj1Desc: 'BTE × 微软黑客马拉松创新挑战赛决赛作品。一款与实体Arduino设备连接的Chrome扩展，能够检测并阻止冲动性网购行为——在一次黑客马拉松中完成开发与路演。',
+      proj1Link: '查看幻灯片',
+      proj2Tag: 'BTE设计冲刺 — 决赛入围',
+      proj2Title: 'Fulton',
+      proj2Desc: 'BTE创业设计冲刺项目。运用设计思维方法论，开发合作机会与扩张策略——从问题界定到结构化路演，在快速迭代中完成。',
+      proj2Link: '查看幻灯片',
+      proj3Tag: 'NYU SVS风险投资竞赛',
+      proj3Title: 'Hamming',
+      proj3Desc: 'NYU SVS风险投资案例竞赛作品。一份结构化的投资分析与基金论文——运用风险投资框架评估一家高潜力的早期企业。',
+      proj3Link: '在LinkedIn查看',
+      skillsLabel: '能力',
+      skillsH2a: '技能与',
+      skillsH2b: '工具',
+      contactLabel: '联系我',
+      contactH2a: '期待',
+      contactH2b: '与您连接',
+      contactBody: '无论是寻求合作、探讨机会，还是只是打个招呼——我都很乐意听到您的消息。',
+      contactEmail: '发送邮件',
+      contactLI: 'LinkedIn',
+      footerText: '© 2025 林睿杰 · NYU Stern BTE',
+      langBtn: 'EN',
+    }
+  };
+
+  let currentLang = 'en';
+
+  function toggleLang() {
+    currentLang = currentLang === 'en' ? 'zh' : 'en';
+    applyLang(currentLang);
+  }
+
+  function applyLang(lang) {
+    const t = translations[lang];
+
+    // Nav
+    document.querySelector('.nav-logo').textContent = t.navHome;
+    const navLinks = document.querySelectorAll('.nav-links a');
+    const navKeys = ['navAbout','navWork','navSkills','navContact'];
+    navLinks.forEach((a, i) => { if(navKeys[i]) a.textContent = t[navKeys[i]]; });
+
+    // Lang button
+    document.getElementById('langToggle').textContent = t.langBtn;
+
+    // Hero
+    const eyebrow = document.querySelector('.hero-eyebrow');
+    if(eyebrow) eyebrow.textContent = t.eyebrow;
+    const heroH2 = document.querySelector('.hero-text h2');
+    if(heroH2) heroH2.innerHTML = t.heroH1a + '<br /><em>' + t.heroH1b + '</em>';
+    const heroBio = document.querySelector('.hero-bio');
+    if(heroBio) heroBio.textContent = t.heroBio;
+    const heroCta = document.querySelector('.hero-cta');
+    if(heroCta) heroCta.textContent = t.heroCta;
+
+    // About
+    const aboutLabel = document.querySelector('#about .section-label');
+    if(aboutLabel) aboutLabel.textContent = t.aboutLabel;
+    const aboutH2 = document.querySelector('#about h2');
+    if(aboutH2) aboutH2.innerHTML = t.aboutH2a + ' <em>' + t.aboutH2b + '</em>';
+    const aboutBody = document.querySelector('.about-body p');
+    if(aboutBody) aboutBody.textContent = t.aboutBody;
+
+    // Stat labels
+    const statLabels = document.querySelectorAll('.stat-label');
+    const statKeys = ['statWorksLabel','statProgramLabel','statLangsLabel'];
+    statLabels.forEach((el,i) => { if(statKeys[i]) el.textContent = t[statKeys[i]]; });
+
+    // Work section
+    const workLabel = document.querySelector('#work .section-label');
+    if(workLabel) workLabel.textContent = t.workLabel;
+    const workH2 = document.querySelector('#work h2');
+    if(workH2) workH2.innerHTML = t.workH2a + ' <em>' + t.workH2b + '</em>';
+
+    // Project cards
+    const cards = document.querySelectorAll('.project-card');
+    const projData = [
+      {tag:'proj1Tag',title:'proj1Title',desc:'proj1Desc',link:'proj1Link'},
+      {tag:'proj2Tag',title:'proj2Title',desc:'proj2Desc',link:'proj2Link'},
+      {tag:'proj3Tag',title:'proj3Title',desc:'proj3Desc',link:'proj3Link'},
+    ];
+    cards.forEach((card,i) => {
+      const d = projData[i];
+      if(!d) return;
+      const tagEl = card.querySelector('.project-tag');
+      if(tagEl) tagEl.textContent = t[d.tag];
+      const titleEl = card.querySelector('.project-title');
+      if(titleEl) titleEl.textContent = t[d.title];
+      const descEl = card.querySelector('.project-desc');
+      if(descEl) descEl.textContent = t[d.desc];
+      const linkEl = card.querySelector('.project-link');
+      if(linkEl) linkEl.textContent = t[d.link];
+    });
+
+    // Skills
+    const skillsLabel = document.querySelector('#skills .section-label');
+    if(skillsLabel) skillsLabel.textContent = t.skillsLabel;
+    const skillsH2 = document.querySelector('#skills h2');
+    if(skillsH2) skillsH2.innerHTML = t.skillsH2a + ' <em>' + t.skillsH2b + '</em>';
+
+    // Contact
+    const contactLabel = document.querySelector('#contact .section-label');
+    if(contactLabel) contactLabel.textContent = t.contactLabel;
+    const contactH2 = document.querySelector('#contact h2');
+    if(contactH2) contactH2.innerHTML = t.contactH2a + ' <em>' + t.contactH2b + '</em>';
+    const contactBody = document.querySelector('.contact-body');
+    if(contactBody) contactBody.textContent = t.contactBody;
+    const contactBtns = document.querySelectorAll('.contact-btn');
+    if(contactBtns[0]) contactBtns[0].childNodes[contactBtns[0].childNodes.length-1].textContent = ' ' + t.contactEmail;
+    if(contactBtns[1]) contactBtns[1].childNodes[contactBtns[1].childNodes.length-1].textContent = ' ' + t.contactLI;
+
+    // Footer
+    const footer = document.querySelector('footer span');
+    if(footer) footer.textContent = t.footerText;
+  }
   </script>
 </body>
 </html>
