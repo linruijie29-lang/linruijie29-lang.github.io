@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Richard Lin — BTE + Finance + Computer Science @ NYU Stern</title>
+  <title>Richard Lin — BTE @ NYU Stern</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
@@ -534,10 +534,16 @@
     </ul>
   </nav>
 
+  <!-- ── Ticker Tape ── -->
+  <div class="ticker-wrap">
+    <script type="module" src="https://widgets.tradingview-widget.com/w/en/tv-ticker-tape.js"></script>
+    <tv-ticker-tape symbols="FOREXCOM:SPXUSD,FOREXCOM:NSXUSD,FOREXCOM:DJI,FX:EURUSD,BITSTAMP:BTCUSD,BITSTAMP:ETHUSD,CMCMARKETS:GOLD,SSE:000001,OTC:JPXGY,SZSE:399011"></tv-ticker-tape>
+  </div>
+
   <!-- ── Hero ── -->
   <section id="hero">
     <div class="hero-text">
-      <p class="hero-eyebrow fade-up">NYU Stern · BTE + Finance + CS · Class of 2029</p>
+      <p class="hero-eyebrow fade-up">NYU Stern · BTE · Class of 2029</p>
       <h1 class="fade-up">Richard<br /><em>Lin</em></h1>
       <p class="hero-bio fade-up">
         Freshman at NYU Stern's Business, Technology &amp; Entrepreneurship program, 
@@ -659,7 +665,7 @@
             analysis and fund thesis — applying venture frameworks to evaluate 
             a high-potential early-stage company.
           </p>
-          <a class="project-link" href="https://drive.google.com/file/d/1M7wXDvb01DkzE_lAy7L2jBBgiYs4rI5V/view?usp=sharing" target="_blank" rel="noopener">View Pitch Deck</a>
+          <a class="project-link" href="https://drive.google.com/file/d/1M7wXDvb01DkzE_lAy7L2jBBgiYs4rI5V/view?usp=sharing" target="_blank" rel="noopener">View on LinkedIn</a>
         </div>
       </div>
 
@@ -671,7 +677,7 @@
     <div class="section-label">Capabilities</div>
     <h2>Skills &amp; <em>Tools</em></h2>
     <div class="skills-wrap">
-      <span class="skill-chip">Chinese (Native)</span>
+      <span class="skill-chip">Chinese (Professional)</span>
       <div class="skills-divider"></div>
       <span class="skill-chip">SQL</span>
       <span class="skill-chip">HTML</span>
@@ -738,6 +744,5 @@
     }, { rootMargin: '-40% 0px -55% 0px' });
     sections.forEach(s => io.observe(s));
   </script>
- 
 </body>
 </html>
