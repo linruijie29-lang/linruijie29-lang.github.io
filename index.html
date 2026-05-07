@@ -58,14 +58,6 @@
       padding: 20px 60px;
       background: rgba(245,240,232,0.88);
       backdrop-filter: blur(12px);
-      border-bottom: none;
-    }
-
-    .ticker-wrap {
-      position: fixed;
-      top: 62px;
-      left: 0; right: 0;
-      z-index: 99;
       border-bottom: 1px solid var(--rule);
     }
 
@@ -103,7 +95,7 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       align-items: center;
-      padding: 160px 60px 60px;
+      padding: 120px 60px 60px;
       gap: 60px;
       position: relative;
     }
@@ -506,7 +498,7 @@
     /* ── Responsive ── */
     @media (max-width: 900px) {
       nav { padding: 18px 28px; }
-      #hero { grid-template-columns: 1fr; padding: 150px 28px 60px; }
+      #hero { grid-template-columns: 1fr; padding: 110px 28px 60px; }
       .hero-image-wrap { justify-content: center; }
       .headshot-frame { width: 280px; }
       .about-grid { grid-template-columns: 1fr; gap: 40px; }
@@ -533,12 +525,6 @@
       <li><a href="#contact">Contact</a></li>
     </ul>
   </nav>
-
-  <!-- ── Ticker Tape ── -->
-  <div class="ticker-wrap">
-    <script type="module" src="https://widgets.tradingview-widget.com/w/en/tv-ticker-tape.js"></script>
-    <tv-ticker-tape symbols="FOREXCOM:SPXUSD,FOREXCOM:NSXUSD,FOREXCOM:DJI,FX:EURUSD,BITSTAMP:BTCUSD,BITSTAMP:ETHUSD,CMCMARKETS:GOLD,SSE:000001,OTC:JPXGY,SZSE:399011"></tv-ticker-tape>
-  </div>
 
   <!-- ── Hero ── -->
   <section id="hero">
@@ -681,9 +667,9 @@
         <div class="project-body">
           <div class="project-title">Soil Doctors</div>
           <p class="project-desc">
-            BTE Strategy Consulting engagement for a Kenyan climate-agritech startup.
-            Delivered market analysis, competitive positioning, and growth strategy
-            recommendations as part of a cross-functional consulting team.
+            BTE Strategy Consulting engagement for a Kenyan based climate-agritech
+            startup. Delivered market analysis, competitive positioning, and growth
+            strategy recommendations as part of a cross-functional consulting team.
           </p>
           <a class="project-link" href="https://docs.google.com/presentation/d/1EXN3A3yv1TE7xLBsOJJGmbaWT8IiwtNVEz-m_1VpS1o/edit?usp=sharing" target="_blank" rel="noopener">View Deck</a>
         </div>
